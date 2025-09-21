@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+/* import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function App() {
@@ -16,7 +16,7 @@ export default function App() {
   const addTodo = () => {
     if (!text.trim()) return;
     axios.post("http://localhost:5000/api/todos", { text })
-      .then(res => {
+      .then(res => {      
         setTodos([...todos, res.data]);
         setText("");
       })
@@ -82,3 +82,48 @@ const styles = {
   todoText: { cursor: "pointer" },
   deleteBtn: { background: "red", color: "white", border: "none", padding: "5px" }
 };
+ */
+
+
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+export default function App() {
+  const [todos, setTodos] = useState([]);
+  const [text, setText] = useState("");
+
+  // Retrieve all todos from backend
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/todos")
+      .then(res => setTodos(res.data))
+      .catch(err => console.error(err));
+  }, []);
+
+  // Add new todo
+  const addTodo = () => {
+    if (!text.trim()) return; // avoid empty todos
+    axios.post("http://localhost:5000/api/todos", { text })
+      .then(res => {
+        setTodos([...todos, res.data]); // add new todo to list
+        setText(""); // clear input
+      })
+      .catch(err => console.error(err));
+  };
+
+  return (
+    <div>
+      <input 
+        type="text" 
+        value={text} 
+        onChange={(e) => setText(e.target.value)} 
+      />
+      <button onClick={addTodo}>Add</button>
+
+      <ul>
+        {todos.map((todo, i) => (
+          <li key={i}>{todo.text}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
